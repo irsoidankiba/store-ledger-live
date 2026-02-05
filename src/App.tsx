@@ -11,6 +11,7 @@ import Stores from "./pages/Stores";
 import StoreDetail from "./pages/StoreDetail";
 import AddRecovery from "./pages/AddRecovery";
 import Reports from "./pages/Reports";
+import StoreOwners from "./pages/StoreOwners";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -29,6 +30,7 @@ const App = () => (
               <Route path="/stores" element={<Stores />} />
               <Route path="/stores/:storeId" element={<StoreDetail />} />
               <Route path="/add" element={<AddRecovery />} />
+              <Route path="/owners" element={<StoreOwners />} />
               <Route path="/reports" element={<Reports />} />
             </Route>
             <Route path="*" element={<NotFound />} />

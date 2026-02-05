@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { cn } from '@/lib/utils';
 import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { formatCurrency } from '@/lib/format';
 
 interface StatsCardProps {
   title: string;
@@ -23,12 +24,7 @@ export function StatsCard({
 }: StatsCardProps) {
   const formatValue = (val: string | number) => {
     if (typeof val === 'number') {
-      return new Intl.NumberFormat('fr-FR', {
-        style: 'currency',
-        currency: 'XOF',
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0,
-      }).format(val);
+      return formatCurrency(val);
     }
     return val;
   };

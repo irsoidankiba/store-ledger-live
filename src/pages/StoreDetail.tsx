@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Wallet, TrendingDown, Receipt } from 'lucide-react';
+import { ArrowLeft, Wallet, TrendingUp, Receipt } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { StatsCard } from '@/components/dashboard/StatsCard';
@@ -55,21 +55,19 @@ export default function StoreDetail() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-3">
           <StatsCard
+            title="Attendu aujourd'hui"
+            value={stats?.todayExpected || 0}
+            icon={<TrendingUp className="h-5 w-5" />}
+          />
+          <StatsCard
             title="Recouvré aujourd'hui"
             value={stats?.todayRecovered || 0}
             icon={<Wallet className="h-5 w-5" />}
           />
           <StatsCard
-            title="Écart du jour"
-            value={Math.abs(stats?.todayGap || 0)}
-            icon={<TrendingDown className="h-5 w-5" />}
-            trend={stats?.todayGap === 0 ? 'neutral' : stats?.todayGap && stats.todayGap > 0 ? 'down' : 'up'}
-          />
-          <StatsCard
-            title="Écart mensuel"
-            value={Math.abs(stats?.monthGap || 0)}
+            title="Dépenses du jour"
+            value={stats?.todayExpenses || 0}
             icon={<Receipt className="h-5 w-5" />}
-            trend={stats?.monthGap === 0 ? 'neutral' : stats?.monthGap && stats.monthGap > 0 ? 'down' : 'up'}
           />
         </div>
       )}

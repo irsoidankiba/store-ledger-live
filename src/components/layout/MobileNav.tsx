@@ -1,5 +1,5 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { LayoutDashboard, Store, PlusCircle, FileText, Settings } from 'lucide-react';
+import { LayoutDashboard, Store, PlusCircle, FileText, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/hooks/useAuth';
 
@@ -7,6 +7,7 @@ const navItems = [
   { to: '/', icon: LayoutDashboard, label: 'Tableau de bord' },
   { to: '/stores', icon: Store, label: 'Magasins' },
   { to: '/add', icon: PlusCircle, label: 'Saisie', adminOnly: true },
+  { to: '/owners', icon: Users, label: 'Propriétaires', adminOnly: true },
   { to: '/reports', icon: FileText, label: 'Rapports' },
 ];
 

@@ -9,6 +9,7 @@ import { RecoveryList } from '@/components/recovery/RecoveryList';
 import { useRecoveries } from '@/hooks/useRecoveries';
 import { useStores } from '@/hooks/useStores';
 import { Skeleton } from '@/components/ui/skeleton';
+import { formatCurrency } from '@/lib/format';
 import {
   Select,
   SelectContent,
@@ -57,24 +58,15 @@ export default function Reports() {
     dateRange.end
   );
 
-  // Calculate totals
+  // Calculate totals (without gap)
   const totals = recoveries?.reduce(
     (acc, r) => ({
       expected: acc.expected + Number(r.expected_amount),
       recovered: acc.recovered + Number(r.recovered_amount),
       expenses: acc.expenses + Number(r.expenses),
-      gap: acc.gap + Number(r.gap),
     }),
-    { expected: 0, recovered: 0, expenses: 0, gap: 0 }
-  ) || { expected: 0, recovered: 0, expenses: 0, gap: 0 };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-    }).format(value);
-  };
+    { expected: 0, recovered: 0, expenses: 0 }
+  ) || { expected: 0, recovered: 0, expenses: 0 };
 
   const selectedStoreName = selectedStore === 'all'
     ? 'Tous les magasins'
@@ -90,14 +82,13 @@ export default function Reports() {
     // Create CSV content
     if (!recoveries || recoveries.length === 0) return;
 
-    const headers = ['Date', 'Magasin', 'Attendu', 'Recouvré', 'Dépenses', 'Écart', 'Observations'];
+    const headers = ['Date', 'Magasin', 'Attendu', 'Recouvré', 'Dépenses', 'Observations'];
     const rows = recoveries.map((r) => [
       format(new Date(r.date), 'dd/MM/yyyy'),
       r.stores?.name || '',
       r.expected_amount,
       r.recovered_amount,
       r.expenses,
-      r.gap,
       r.observations || '',
     ]);
 
@@ -108,7 +99,6 @@ export default function Reports() {
       `Total Attendu;${totals.expected}`,
       `Total Recouvré;${totals.recovered}`,
       `Total Dépenses;${totals.expenses}`,
-      `Écart Total;${totals.gap}`,
     ].join('\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -170,7 +160,7 @@ export default function Reports() {
           {isLoading ? (
             <Skeleton className="h-24" />
           ) : (
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <p className="text-sm text-muted-foreground">Total attendu</p>
                 <p className="text-xl font-bold">{formatCurrency(totals.expected)}</p>
@@ -182,12 +172,6 @@ export default function Reports() {
               <div>
                 <p className="text-sm text-muted-foreground">Total dépenses</p>
                 <p className="text-xl font-bold">{formatCurrency(totals.expenses)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Écart total</p>
-                <p className={`text-xl font-bold ${totals.gap > 0 ? 'text-destructive' : totals.gap < 0 ? 'text-success' : ''}`}>
-                  {totals.gap > 0 ? '-' : totals.gap < 0 ? '+' : ''}{formatCurrency(Math.abs(totals.gap))}
-                </p>
               </div>
             </div>
           )}

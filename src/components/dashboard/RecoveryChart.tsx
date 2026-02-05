@@ -24,13 +24,12 @@ export function RecoveryChart({ data }: RecoveryChartProps) {
       date: format(parseISO(item.date), 'dd MMM', { locale: fr }),
       expected: Number(item.expected_amount),
       recovered: Number(item.recovered_amount),
-      gap: Number(item.gap),
     }));
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('fr-FR', {
       style: 'currency',
-      currency: 'XOF',
+      currency: 'KMF',
       notation: 'compact',
       minimumFractionDigits: 0,
     }).format(value);
