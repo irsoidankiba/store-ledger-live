@@ -93,10 +93,6 @@ export function RecoveryForm({ existingRecovery, onSuccess }: RecoveryFormProps)
 
   const isSubmitting = createRecovery.isPending || updateRecovery.isPending;
 
-  const expectedAmount = form.watch('expected_amount') || 0;
-  const recoveredAmount = form.watch('recovered_amount') || 0;
-  const gap = expectedAmount - recoveredAmount;
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -167,7 +163,7 @@ export function RecoveryForm({ existingRecovery, onSuccess }: RecoveryFormProps)
             name="expected_amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Montant attendu (FCFA) *</FormLabel>
+                <FormLabel>Montant attendu (KMF) *</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -185,7 +181,7 @@ export function RecoveryForm({ existingRecovery, onSuccess }: RecoveryFormProps)
             name="recovered_amount"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Montant recouvré (FCFA) *</FormLabel>
+                <FormLabel>Montant recouvré (KMF) *</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -203,7 +199,7 @@ export function RecoveryForm({ existingRecovery, onSuccess }: RecoveryFormProps)
             name="expenses"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Dépenses (FCFA)</FormLabel>
+                <FormLabel>Dépenses (KMF)</FormLabel>
                 <FormControl>
                   <Input
                     type="number"
@@ -216,16 +212,6 @@ export function RecoveryForm({ existingRecovery, onSuccess }: RecoveryFormProps)
             )}
           />
 
-          <div className="flex flex-col justify-end">
-            <p className="text-sm text-muted-foreground mb-1">Écart calculé</p>
-            <p className={cn(
-              'text-2xl font-bold',
-              gap > 0 ? 'text-destructive' : gap < 0 ? 'text-success' : 'text-foreground'
-            )}>
-              {gap > 0 ? '-' : gap < 0 ? '+' : ''}
-              {new Intl.NumberFormat('fr-FR').format(Math.abs(gap))} FCFA
-            </p>
-          </div>
 
           <FormField
             control={form.control}

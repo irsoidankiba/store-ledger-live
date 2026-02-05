@@ -1,4 +1,4 @@
-import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/format';
 
 interface StoreStats {
   storeId: string;
@@ -18,15 +18,6 @@ interface StoreComparisonTableProps {
 }
 
 export function StoreComparisonTable({ stores, onStoreClick }: StoreComparisonTableProps) {
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
-
   if (stores.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
@@ -41,10 +32,10 @@ export function StoreComparisonTable({ stores, onStoreClick }: StoreComparisonTa
         <thead>
           <tr>
             <th>Magasin</th>
-            <th className="text-right">Aujourd'hui</th>
-            <th className="text-right">Écart J</th>
-            <th className="text-right">Mois</th>
-            <th className="text-right">Écart M</th>
+            <th className="text-right">Attendu J</th>
+            <th className="text-right">Recouvré J</th>
+            <th className="text-right">Attendu M</th>
+            <th className="text-right">Recouvré M</th>
           </tr>
         </thead>
         <tbody>
@@ -60,25 +51,17 @@ export function StoreComparisonTable({ stores, onStoreClick }: StoreComparisonTa
                   <span className="store-badge ml-2">{store.storeCode}</span>
                 </div>
               </td>
+              <td className="text-right">
+                {formatCurrency(store.todayExpected)}
+              </td>
               <td className="text-right font-medium">
                 {formatCurrency(store.todayRecovered)}
               </td>
-              <td className={cn(
-                'text-right',
-                store.todayGap > 0 ? 'amount-negative' : store.todayGap < 0 ? 'amount-positive' : 'amount-neutral'
-              )}>
-                {store.todayGap > 0 ? '-' : store.todayGap < 0 ? '+' : ''}
-                {formatCurrency(Math.abs(store.todayGap))}
+              <td className="text-right">
+                {formatCurrency(store.monthExpected)}
               </td>
               <td className="text-right font-medium">
                 {formatCurrency(store.monthRecovered)}
-              </td>
-              <td className={cn(
-                'text-right',
-                store.monthGap > 0 ? 'amount-negative' : store.monthGap < 0 ? 'amount-positive' : 'amount-neutral'
-              )}>
-                {store.monthGap > 0 ? '-' : store.monthGap < 0 ? '+' : ''}
-                {formatCurrency(Math.abs(store.monthGap))}
               </td>
             </tr>
           ))}

@@ -29,7 +29,7 @@ import {
 import { DailyRecovery, useDeleteRecovery } from '@/hooks/useRecoveries';
 import { RecoveryForm } from './RecoveryForm';
 import { useAuth } from '@/hooks/useAuth';
-import { cn } from '@/lib/utils';
+import { formatCurrency } from '@/lib/format';
 
 interface RecoveryListProps {
   recoveries: DailyRecovery[];
@@ -42,15 +42,6 @@ export function RecoveryList({ recoveries, showStore = true }: RecoveryListProps
   const [editingRecovery, setEditingRecovery] = useState<DailyRecovery | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [viewingRecovery, setViewingRecovery] = useState<DailyRecovery | null>(null);
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('fr-FR', {
-      style: 'currency',
-      currency: 'XOF',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(value);
-  };
 
   const handleDelete = async () => {
     if (deletingId) {
@@ -95,19 +86,9 @@ export function RecoveryList({ recoveries, showStore = true }: RecoveryListProps
                     <span className="text-muted-foreground">Recouvré: </span>
                     <span className="font-medium">{formatCurrency(recovery.recovered_amount)}</span>
                   </div>
-                  <div>
+                  <div className="col-span-2">
                     <span className="text-muted-foreground">Dépenses: </span>
                     <span className="font-medium">{formatCurrency(recovery.expenses)}</span>
-                  </div>
-                  <div>
-                    <span className="text-muted-foreground">Écart: </span>
-                    <span className={cn(
-                      'font-semibold',
-                      recovery.gap > 0 ? 'text-destructive' : recovery.gap < 0 ? 'text-success' : ''
-                    )}>
-                      {recovery.gap > 0 ? '-' : recovery.gap < 0 ? '+' : ''}
-                      {formatCurrency(Math.abs(recovery.gap))}
-                    </span>
                   </div>
                 </div>
 
@@ -198,18 +179,9 @@ export function RecoveryList({ recoveries, showStore = true }: RecoveryListProps
                   <p className="text-sm text-muted-foreground">Montant recouvré</p>
                   <p className="font-medium">{formatCurrency(viewingRecovery.recovered_amount)}</p>
                 </div>
-                <div>
+                <div className="col-span-2">
                   <p className="text-sm text-muted-foreground">Dépenses</p>
                   <p className="font-medium">{formatCurrency(viewingRecovery.expenses)}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Écart</p>
-                  <p className={cn(
-                    'font-semibold',
-                    viewingRecovery.gap > 0 ? 'text-destructive' : viewingRecovery.gap < 0 ? 'text-success' : ''
-                  )}>
-                    {formatCurrency(viewingRecovery.gap)}
-                  </p>
                 </div>
               </div>
               {viewingRecovery.observations && (
