@@ -1,56 +1,43 @@
 import { useState } from 'react';
-import { format, startOfMonth, endOfMonth, subMonths } from 'date-fns';
+import { format, startOfMonth, endOfMonth, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
-import { FileText, Calendar, Download } from 'lucide-react';
+import { FileText, Download, BookOpen } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { StoreSelector } from '@/components/dashboard/StoreSelector';
 import { RecoveryList } from '@/components/recovery/RecoveryList';
 import { useRecoveries } from '@/hooks/useRecoveries';
+import { useAllRecoveries } from '@/hooks/useAllRecoveries';
 import { useStores } from '@/hooks/useStores';
 import { Skeleton } from '@/components/ui/skeleton';
 import { formatCurrency } from '@/lib/format';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
+import { MonthlyArchive } from '@/components/reports/MonthlyArchive';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Reports() {
   const [selectedStore, setSelectedStore] = useState<string>('all');
-  const [selectedPeriod, setSelectedPeriod] = useState<string>('current');
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null);
 
   const { data: stores } = useStores();
+  const storeId = selectedStore === 'all' ? undefined : selectedStore;
 
-  // Calculate date range based on selected period
+  // Fetch all recoveries for archive view
+  const { data: allRecoveries, isLoading: isLoadingAll } = useAllRecoveries({ 
+    storeId 
+  });
+
+  // Calculate date range based on selected month
   const getDateRange = () => {
-    const now = new Date();
-    switch (selectedPeriod) {
-      case 'current':
-        return {
-          start: format(startOfMonth(now), 'yyyy-MM-dd'),
-          end: format(endOfMonth(now), 'yyyy-MM-dd'),
-        };
-      case 'last':
-        const lastMonth = subMonths(now, 1);
-        return {
-          start: format(startOfMonth(lastMonth), 'yyyy-MM-dd'),
-          end: format(endOfMonth(lastMonth), 'yyyy-MM-dd'),
-        };
-      case 'last3':
-        return {
-          start: format(startOfMonth(subMonths(now, 2)), 'yyyy-MM-dd'),
-          end: format(endOfMonth(now), 'yyyy-MM-dd'),
-        };
-      default:
-        return { start: undefined, end: undefined };
-    }
+    if (!selectedMonth) return { start: undefined, end: undefined };
+    
+    const monthDate = parseISO(`${selectedMonth}-01`);
+    return {
+      start: format(startOfMonth(monthDate), 'yyyy-MM-dd'),
+      end: format(endOfMonth(monthDate), 'yyyy-MM-dd'),
+    };
   };
 
   const dateRange = getDateRange();
-  const storeId = selectedStore === 'all' ? undefined : selectedStore;
 
   const { data: recoveries, isLoading } = useRecoveries(
     storeId,
@@ -58,7 +45,7 @@ export default function Reports() {
     dateRange.end
   );
 
-  // Calculate totals (without gap)
+  // Calculate totals
   const totals = recoveries?.reduce(
     (acc, r) => ({
       expected: acc.expected + Number(r.expected_amount),
@@ -72,14 +59,11 @@ export default function Reports() {
     ? 'Tous les magasins'
     : stores?.find((s) => s.id === selectedStore)?.name || 'Magasin';
 
-  const periodLabel = selectedPeriod === 'current'
-    ? format(new Date(), 'MMMM yyyy', { locale: fr })
-    : selectedPeriod === 'last'
-    ? format(subMonths(new Date(), 1), 'MMMM yyyy', { locale: fr })
-    : '3 derniers mois';
+  const periodLabel = selectedMonth
+    ? format(parseISO(`${selectedMonth}-01`), 'MMMM yyyy', { locale: fr })
+    : 'Sélectionnez un mois';
 
   const handleExport = () => {
-    // Create CSV content
     if (!recoveries || recoveries.length === 0) return;
 
     const headers = ['Date', 'Magasin', 'Attendu', 'Recouvré', 'Dépenses', 'Observations'];
@@ -108,6 +92,10 @@ export default function Reports() {
     link.click();
   };
 
+  const handleMonthSelect = (month: string) => {
+    setSelectedMonth(selectedMonth === month ? null : month);
+  };
+
   return (
     <div className="space-y-6">
       <div className="page-header">
@@ -116,90 +104,130 @@ export default function Reports() {
           Rapports
         </h1>
         <p className="page-description">
-          Consultez l'historique et exportez les données de recouvrement
+          Historique mensuel et export des données de recouvrement
         </p>
       </div>
 
-      {/* Filters */}
+      {/* Store Filter */}
       <div className="flex flex-col sm:flex-row gap-4">
         <StoreSelector
           value={selectedStore}
-          onValueChange={setSelectedStore}
+          onValueChange={(value) => {
+            setSelectedStore(value);
+            setSelectedMonth(null);
+          }}
           showAll={true}
         />
-        <Select value={selectedPeriod} onValueChange={setSelectedPeriod}>
-          <SelectTrigger className="w-full sm:w-[200px]">
-            <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="current">Mois en cours</SelectItem>
-            <SelectItem value="last">Mois précédent</SelectItem>
-            <SelectItem value="last3">3 derniers mois</SelectItem>
-            <SelectItem value="all">Tout</SelectItem>
-          </SelectContent>
-        </Select>
-        <Button
-          variant="outline"
-          onClick={handleExport}
-          disabled={!recoveries || recoveries.length === 0}
-        >
-          <Download className="h-4 w-4 mr-2" />
-          Exporter CSV
-        </Button>
       </div>
 
-      {/* Summary */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-medium">
-            Résumé - {selectedStoreName} - {periodLabel}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <Skeleton className="h-24" />
-          ) : (
-            <div className="grid grid-cols-3 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Total attendu</p>
-                <p className="text-xl font-bold">{formatCurrency(totals.expected)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total recouvré</p>
-                <p className="text-xl font-bold text-success">{formatCurrency(totals.recovered)}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Total dépenses</p>
-                <p className="text-xl font-bold">{formatCurrency(totals.expenses)}</p>
-              </div>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+      <Tabs defaultValue="archive" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-2">
+          <TabsTrigger value="archive" className="flex items-center gap-2">
+            <BookOpen className="h-4 w-4" />
+            Historique mensuel
+          </TabsTrigger>
+          <TabsTrigger value="details" className="flex items-center gap-2">
+            <FileText className="h-4 w-4" />
+            Détails
+          </TabsTrigger>
+        </TabsList>
 
-      {/* Recovery List */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-lg font-medium">
-            Détail des recouvrements ({recoveries?.length || 0})
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          {isLoading ? (
-            <div className="space-y-3">
-              {[...Array(5)].map((_, i) => (
-                <Skeleton key={i} className="h-24" />
-              ))}
-            </div>
+        <TabsContent value="archive" className="space-y-4">
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-lg font-medium flex items-center gap-2">
+                <BookOpen className="h-5 w-5" />
+                Classeur des résumés mensuels - {selectedStoreName}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MonthlyArchive
+                recoveries={allRecoveries}
+                isLoading={isLoadingAll}
+                onMonthSelect={handleMonthSelect}
+                selectedMonth={selectedMonth}
+              />
+            </CardContent>
+          </Card>
+        </TabsContent>
+
+        <TabsContent value="details" className="space-y-4">
+          {selectedMonth ? (
+            <>
+              {/* Summary */}
+              <Card>
+                <CardHeader className="flex flex-row items-center justify-between">
+                  <CardTitle className="text-lg font-medium capitalize">
+                    Résumé - {selectedStoreName} - {periodLabel}
+                  </CardTitle>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExport}
+                    disabled={!recoveries || recoveries.length === 0}
+                  >
+                    <Download className="h-4 w-4 mr-2" />
+                    Exporter CSV
+                  </Button>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <Skeleton className="h-24" />
+                  ) : (
+                    <div className="grid grid-cols-3 gap-4">
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total attendu</p>
+                        <p className="text-xl font-bold">{formatCurrency(totals.expected)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total recouvré</p>
+                        <p className="text-xl font-bold text-success">{formatCurrency(totals.recovered)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-muted-foreground">Total dépenses</p>
+                        <p className="text-xl font-bold">{formatCurrency(totals.expenses)}</p>
+                      </div>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Recovery List */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="text-lg font-medium">
+                    Détail des recouvrements ({recoveries?.length || 0})
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      {[...Array(5)].map((_, i) => (
+                        <Skeleton key={i} className="h-24" />
+                      ))}
+                    </div>
+                  ) : (
+                    <RecoveryList
+                      recoveries={recoveries || []}
+                      showStore={selectedStore === 'all'}
+                    />
+                  )}
+                </CardContent>
+              </Card>
+            </>
           ) : (
-            <RecoveryList
-              recoveries={recoveries || []}
-              showStore={selectedStore === 'all'}
-            />
+            <Card>
+              <CardContent className="py-12 text-center text-muted-foreground">
+                <BookOpen className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium">Sélectionnez un mois</p>
+                <p className="text-sm">
+                  Cliquez sur un mois dans l'onglet "Historique mensuel" pour voir les détails
+                </p>
+              </CardContent>
+            </Card>
           )}
-        </CardContent>
-      </Card>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
