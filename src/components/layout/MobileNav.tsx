@@ -19,7 +19,7 @@ export function MobileNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 bg-card border-t border-border z-50 safe-area-inset-bottom">
-      <div className="flex items-center justify-around px-2 py-1">
+      <div className="flex items-center justify-evenly px-1 py-1">
         {filteredItems.map((item) => {
           const isActive = location.pathname === item.to;
           const Icon = item.icon;
@@ -29,14 +29,14 @@ export function MobileNav() {
               key={item.to}
               to={item.to}
               className={cn(
-                'mobile-nav-item flex-1',
+                'flex flex-col items-center gap-0.5 px-2 py-2 text-[10px] font-medium transition-colors min-w-0',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <Icon className={cn('h-5 w-5', isActive && 'text-primary')} />
-              <span className="truncate">{item.label}</span>
+              <Icon className={cn('h-5 w-5 shrink-0', isActive && 'text-primary')} />
+              <span className="truncate max-w-[60px] text-center">{item.label}</span>
             </NavLink>
           );
         })}
