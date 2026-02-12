@@ -75,8 +75,8 @@ export default function Dashboard() {
       {/* Chart */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-medium flex items-center gap-2">
-            <Calendar className="h-5 w-5 text-muted-foreground" />
+          <CardTitle className="text-sm sm:text-lg font-medium flex items-center gap-2">
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-muted-foreground" />
             Évolution des 14 derniers jours
           </CardTitle>
         </CardHeader>
@@ -93,7 +93,7 @@ export default function Dashboard() {
       {selectedStore === 'all' && stats?.storeStats && stats.storeStats.length > 0 && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg font-medium">Comparaison par magasin</CardTitle>
+            <CardTitle className="text-sm sm:text-lg font-medium">Comparaison par magasin</CardTitle>
           </CardHeader>
           <CardContent>
             <StoreComparisonTable
@@ -107,7 +107,7 @@ export default function Dashboard() {
       {/* Recent Recoveries */}
       <Card>
         <CardHeader>
-          <CardTitle className="text-lg font-medium">Derniers recouvrements</CardTitle>
+          <CardTitle className="text-sm sm:text-lg font-medium">Derniers recouvrements</CardTitle>
         </CardHeader>
         <CardContent>
           {recoveriesLoading ? (
