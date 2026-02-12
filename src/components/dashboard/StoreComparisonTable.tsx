@@ -27,15 +27,15 @@ export function StoreComparisonTable({ stores, onStoreClick }: StoreComparisonTa
   }
 
   return (
-    <div className="overflow-x-auto">
-      <table className="data-table">
+    <div className="overflow-x-auto -mx-4 sm:mx-0">
+      <table className="data-table text-xs sm:text-sm">
         <thead>
           <tr>
             <th>Magasin</th>
-            <th className="text-right">Attendu J</th>
-            <th className="text-right">Recouvré J</th>
-            <th className="text-right">Attendu M</th>
-            <th className="text-right">Recouvré M</th>
+            <th className="text-right">Att. J</th>
+            <th className="text-right">Rec. J</th>
+            <th className="text-right">Att. M</th>
+            <th className="text-right">Rec. M</th>
           </tr>
         </thead>
         <tbody>
