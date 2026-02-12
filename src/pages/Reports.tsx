@@ -135,9 +135,9 @@ export default function Reports() {
         <TabsContent value="archive" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg font-medium flex items-center gap-2">
-                <BookOpen className="h-5 w-5" />
-                Classeur des résumés mensuels - {selectedStoreName}
+              <CardTitle className="text-sm sm:text-lg font-medium flex items-center gap-2">
+                <BookOpen className="h-4 w-4 sm:h-5 sm:w-5" />
+                Classeur - {selectedStoreName}
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -156,8 +156,8 @@ export default function Reports() {
             <>
               {/* Summary */}
               <Card>
-                <CardHeader className="flex flex-row items-center justify-between">
-                  <CardTitle className="text-lg font-medium capitalize">
+                <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                  <CardTitle className="text-sm sm:text-lg font-medium capitalize">
                     Résumé - {selectedStoreName} - {periodLabel}
                   </CardTitle>
                   <Button
@@ -174,18 +174,18 @@ export default function Reports() {
                   {isLoading ? (
                     <Skeleton className="h-24" />
                   ) : (
-                    <div className="grid grid-cols-3 gap-4">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total attendu</p>
-                        <p className="text-xl font-bold">{formatCurrency(totals.expected)}</p>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="flex justify-between sm:block p-2 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
+                        <p className="text-xs sm:text-sm text-muted-foreground">Total attendu</p>
+                        <p className="text-sm sm:text-xl font-bold">{formatCurrency(totals.expected)}</p>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total recouvré</p>
-                        <p className="text-xl font-bold text-success">{formatCurrency(totals.recovered)}</p>
+                      <div className="flex justify-between sm:block p-2 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
+                        <p className="text-xs sm:text-sm text-muted-foreground">Total recouvré</p>
+                        <p className="text-sm sm:text-xl font-bold text-success">{formatCurrency(totals.recovered)}</p>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Total dépenses</p>
-                        <p className="text-xl font-bold">{formatCurrency(totals.expenses)}</p>
+                      <div className="flex justify-between sm:block p-2 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
+                        <p className="text-xs sm:text-sm text-muted-foreground">Total dépenses</p>
+                        <p className="text-sm sm:text-xl font-bold">{formatCurrency(totals.expenses)}</p>
                       </div>
                     </div>
                   )}
