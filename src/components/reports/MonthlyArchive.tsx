@@ -159,20 +159,18 @@ export function MonthlyArchive({
               {isSelected && (
                 <div className="mt-4 pt-4 border-t space-y-4">
                   {/* Global summary */}
-                  <div className="grid grid-cols-3 gap-4">
-                    <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                    <div className="flex justify-between sm:block p-2 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
                       <p className="text-xs text-muted-foreground">Total attendu</p>
-                      <p className="font-semibold">{formatCurrency(data.totalExpected)}</p>
+                      <p className="text-sm sm:text-base font-semibold">{formatCurrency(data.totalExpected)}</p>
                     </div>
-                    <div>
+                    <div className="flex justify-between sm:block p-2 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
                       <p className="text-xs text-muted-foreground">Total recouvré</p>
-                      <p className="font-semibold text-success">
-                        {formatCurrency(data.totalRecovered)}
-                      </p>
+                      <p className="text-sm sm:text-base font-semibold text-success">{formatCurrency(data.totalRecovered)}</p>
                     </div>
-                    <div>
+                    <div className="flex justify-between sm:block p-2 sm:p-0 bg-muted/30 sm:bg-transparent rounded-lg">
                       <p className="text-xs text-muted-foreground">Total dépenses</p>
-                      <p className="font-semibold">{formatCurrency(data.totalExpenses)}</p>
+                      <p className="text-sm sm:text-base font-semibold">{formatCurrency(data.totalExpenses)}</p>
                     </div>
                   </div>
 
@@ -233,16 +231,16 @@ export function MonthlyArchive({
                                   {storeRate.toFixed(0)}%
                                 </span>
                               </div>
-                              <div className="grid grid-cols-3 gap-2 text-xs">
-                                <div>
+                              <div className="grid grid-cols-1 sm:grid-cols-3 gap-1 text-xs">
+                                <div className="flex justify-between sm:block">
                                   <span className="text-muted-foreground">Attendu</span>
                                   <p className="font-medium">{formatCurrency(store.totalExpected)}</p>
                                 </div>
-                                <div>
+                                <div className="flex justify-between sm:block">
                                   <span className="text-muted-foreground">Recouvré</span>
                                   <p className="font-medium text-success">{formatCurrency(store.totalRecovered)}</p>
                                 </div>
-                                <div>
+                                <div className="flex justify-between sm:block">
                                   <span className="text-muted-foreground">Dépenses</span>
                                   <p className="font-medium">{formatCurrency(store.totalExpenses)}</p>
                                 </div>
