@@ -46,14 +46,19 @@ export default function Reports() {
   );
 
   // Calculate totals
-  const totals = recoveries?.reduce(
+  const rawTotals = recoveries?.reduce(
     (acc, r) => ({
       expected: acc.expected + Number(r.expected_amount),
-      recovered: acc.recovered + Number(r.recovered_amount),
       expenses: acc.expenses + Number(r.expenses),
     }),
-    { expected: 0, recovered: 0, expenses: 0 }
-  ) || { expected: 0, recovered: 0, expenses: 0 };
+    { expected: 0, expenses: 0 }
+  ) || { expected: 0, expenses: 0 };
+
+  const totals = {
+    expected: rawTotals.expected,
+    recovered: rawTotals.expected - rawTotals.expenses,
+    expenses: rawTotals.expenses,
+  };
 
   const selectedStoreName = selectedStore === 'all'
     ? 'Tous les magasins'

@@ -83,8 +83,8 @@ export function MonthlyArchive({
     };
 
     existing.totalExpected += Number(r.expected_amount);
-    existing.totalRecovered += Number(r.recovered_amount);
     existing.totalExpenses += Number(r.expenses);
+    existing.totalRecovered = existing.totalExpected - existing.totalExpenses;
     existing.count += 1;
 
     // Store breakdown
@@ -97,8 +97,8 @@ export function MonthlyArchive({
       count: 0,
     };
     storeData.totalExpected += Number(r.expected_amount);
-    storeData.totalRecovered += Number(r.recovered_amount);
     storeData.totalExpenses += Number(r.expenses);
+    storeData.totalRecovered = storeData.totalExpected - storeData.totalExpenses;
     storeData.count += 1;
     existing.stores.set(storeName, storeData);
 
